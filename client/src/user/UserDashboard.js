@@ -4,6 +4,9 @@ import { isAuthenticated } from "../auth";
 import { Link } from "react-router-dom";
 
 const Dashboard = () => {
+  const {
+    user: { _id, name, email, role },
+  } = isAuthenticated();
   const userLinks = () => {
     return (
       <div className="card">
@@ -23,10 +26,6 @@ const Dashboard = () => {
       </div>
     );
   };
-
-  const {
-    user: { _id, name, email, role },
-  } = isAuthenticated();
 
   const userInfo = () => {
     return (
