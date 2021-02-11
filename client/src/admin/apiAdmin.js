@@ -8,7 +8,7 @@ export const createCategory = (userId, token, category) => {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(category),
   })
@@ -18,4 +18,32 @@ export const createCategory = (userId, token, category) => {
     .catch((err) => {
       console.log(err);
     });
+};
+export const createProduct = (userId, token, product) => {
+  // console.log(name, email, password);
+  // console.log(user)
+  return fetch(`${API}/product/create/${userId}`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: product,
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+export const getCategories = () => {
+  return fetch(`${API}/categories`, {
+    method: "GET",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
 };
