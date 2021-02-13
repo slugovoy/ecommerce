@@ -25,8 +25,8 @@ const AddProduct = () => {
     name,
     description,
     price,
-    category,
     categories,
+    category,
     shipping,
     quantity,
     loading,
@@ -48,12 +48,12 @@ const AddProduct = () => {
 
   useEffect(() => {
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (name) => (event) => {
     const value =
-      name === "photo" ? event.target.files[0].value : event.target.value;
+      name === "photo" ? event.target.files[0] : event.target.value;
     formData.set(name, value);
     setValues({ ...values, [name]: value });
   };
@@ -74,8 +74,7 @@ const AddProduct = () => {
           price: "",
           quantity: "",
           loading: false,
-          createdProduct: data.name,
-          formData: new FormData()
+          createdProduct: data.name
         });
       }
     });
