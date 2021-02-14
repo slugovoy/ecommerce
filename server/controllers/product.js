@@ -177,7 +177,7 @@ exports.list = (req, res) => {
 // will find product based on the req product category
 // and will return all related products
 
-exports.lestRelated = (req, res) => {
+exports.listRelated = (req, res) => {
   let limit = req.query.limit ? parseInt(req.query.limit) : 6;
 
   Product.find({ _id: { $ne: req.product }, category: req.product.category })
