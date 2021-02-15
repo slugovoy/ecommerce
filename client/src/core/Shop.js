@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./Layout";
 import Card from "./Card";
-import { getCategories } from "./apiCore";
+import { getCategories, getFilteredProducts } from "./apiCore";
 import Checkbox from "./Checkbox";
+import Radiobox from "./Radiobox";
+import { prices } from "./fixedPrices";
 
 const Shop = () => {
   const [myFilters, setMyFilters] = useState({
     filters: {
       category: [],
-      price: []
-    }
-  })
+      price: [],
+    },
+  });
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(false);
+  const [limit, setLimit] = useState(6);
+  const [skip, setSkip] = useState(0);
+  const [filteredResults, setFilteredResults] = useState([]);
 
   const init = () => {
     getCategories().then((data) => {
@@ -24,16 +29,51 @@ const Shop = () => {
     });
   };
 
+  const loadFiltersResults = (newFilters) => {
+    // console.log(newFilters);
+
+    getFilteredProducts(skip, limit, newFilters).then((data) => {
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setFilteredResults(data.data);
+      }
+    });
+  };
+
   useEffect(() => {
     init();
+    loadFiltersResults(skip, limit, myFilters.filters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleFilters = (filters, filterBy) => {
     // console.log(filters, filterBy);
 
-    const newFilters = {...myFilters};
+    const newFilters = { ...myFilters };
     newFilters.filters[filterBy] = filters;
+
+    if (filterBy === "price") {
+      let priceValues = handlePrice(filters);
+      newFilters.filters[filterBy] = priceValues;
+    }
+
+    loadFiltersResults(myFilters.filters);
+
     setMyFilters(newFilters);
+  };
+
+  const handlePrice = (value) => {
+    const data = prices;
+    // console.log(data);
+    let dataArray = [];
+
+    for (let key in data) {
+      if (data[key]._id === parseInt(value)) {
+        dataArray = data[key].array;
+      }
+    }
+    return dataArray;
   };
 
   return (
@@ -46,10 +86,27 @@ const Shop = () => {
         <div className="col-4">
           <h4>Filter by Categories</h4>
           <ul>
-            <Checkbox categories={categories} handleFilters={filters => handleFilters(filters, 'category')}/>
+            <Checkbox
+              categories={categories}
+              handleFilters={(filters) => handleFilters(filters, "category")}
+            />
           </ul>
+          <h4>Filter by price range</h4>
+          <div>
+            <Radiobox
+              prices={prices}
+              handleFilters={(filters) => handleFilters(filters, "price")}
+            />
+          </div>
         </div>
-        <div className="col-8">{JSON.stringify(myFilters)}</div>
+        <div className="col-8">
+          <h2 className="headerTitle mb-4">Products</h2>
+          <div className="row">
+            {filteredResults.map((product, index) => (
+              <Card key={index} product={product} />
+            ))}
+          </div>
+        </div>
       </div>
     </Layout>
   );
