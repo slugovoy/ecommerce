@@ -59,13 +59,14 @@ const Shop = () => {
 
   const loadMoreButton = () => {
     return (
-      size > 0 && size >= limit && (
+      size > 0 &&
+      size >= limit && (
         <button onClick={loadMore} className="btn btn-info mb-5">
           Load More
         </button>
       )
-    )
-  }
+    );
+  };
 
   useEffect(() => {
     init();
@@ -129,10 +130,12 @@ const Shop = () => {
           <h2 className="headerTitle mb-4">Products</h2>
           <div className="row">
             {filteredResults.map((product, index) => (
-              <Card key={index} product={product} />
+              <div key={index} className="col-4 mb-3">
+                <Card product={product} />
+              </div>
             ))}
           </div>
-          <hr/>
+          <hr />
           {loadMoreButton()}
         </div>
       </div>

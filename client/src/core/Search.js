@@ -50,16 +50,29 @@ const Search = () => {
     setData({ ...data, [name]: event.target.value, searched: false });
   };
 
-  const searchedProducts = (results = []) => {
+  const searchMessage = (searched, results) => {
+    if (searched && results.length > 0) {
+      return `Found ${results.length} products`;
+    }
+    if (searched && results.length < 1) {
+      return `No products found`;
+    }
+  };
 
-    return(
-      <div className="row">
-        {results.map((product, index) => (
-          <Card key={index} product={product} />
-        ))}
+  const searchedProducts = (results = []) => {
+    return (
+      <div>
+        <h2 className="headerTitle mt-4 mb-4">
+          {searchMessage(searched, results)}
+        </h2>
+        <div className="row">
+          {results.map((product, index) => (
+            <Card key={index} product={product} />
+          ))}
+        </div>
       </div>
-    )
-  }
+    );
+  };
 
   const searchForm = () => (
     <form onSubmit={searchSubmit}>
@@ -67,7 +80,7 @@ const Search = () => {
         <div className="input-group input-group-lg">
           <div className="input-group-prepend">
             <select className="btn mr-2" onChange={handleChange("category")}>
-              <option value="All">Pick Category</option>
+              <option value="All">All Categories</option>
               {categories.map((category, index) => (
                 <option key={index} value={category._id}>
                   {category.name}
@@ -92,10 +105,8 @@ const Search = () => {
 
   return (
     <div className="row">
-      <div className="container mb-3">{searchForm()}
-      </div>
-      <div className="container-fluid mb-3">{searchedProducts(results)}
-      </div>
+      <div className="container mb-3">{searchForm()}</div>
+      <div className="container-fluid mb-3">{searchedProducts(results)}</div>
     </div>
   );
 };
