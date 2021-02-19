@@ -5,15 +5,17 @@ const Product = require("../models/product");
 const { errorHandler } = require("../helpers/dbErrorHandler");
 
 exports.productById = (req, res, next, id) => {
-  Product.findById(id).exec((err, product) => {
-    if (err || !product) {
-      return res.status(400).json({
-        error: "Product not found",
-      });
-    }
-    req.product = product;
-    next();
-  });
+  Product.findById(id)
+    .populate("category")
+    .exec((err, product) => {
+      if (err || !product) {
+        return res.status(400).json({
+          error: "Product not found",
+        });
+      }
+      req.product = product;
+      next();
+    });
 };
 
 exports.read = (req, res) => {
@@ -286,6 +288,6 @@ exports.listSearch = (req, res) => {
         });
       }
       res.json(products);
-    }).select('-photo')
+    }).select("-photo");
   }
 };

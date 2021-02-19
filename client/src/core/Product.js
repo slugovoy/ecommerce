@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Layout from "./Layout";
 import { read } from "./apiCore";
 import Card from "./Card";
-import Search from "./Search";
 
 const Product = (props) => {
   const [product, setProduct] = useState({});
@@ -32,7 +31,11 @@ const Product = (props) => {
       className="container-fluid"
     >
       <div className="row">
-        {product && product.description && <Card product={product} showViewProductButton={false} />}
+        <div className="col-8">
+          {product && product.description && (
+            <Card product={product} showViewProductButton={false} />
+          )}
+        </div>
       </div>
     </Layout>
   );
