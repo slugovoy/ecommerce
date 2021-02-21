@@ -93,3 +93,9 @@
 .black-5 {
     background: #b3b3b3;
 }
+
+.relatedDiv {
+    width: 29vw;
+  height: 97vh;
+  overflow: auto;
+}
