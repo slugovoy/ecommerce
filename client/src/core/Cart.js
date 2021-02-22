@@ -10,14 +10,20 @@ const Cart = () => {
   useEffect(() => {
     setItems(getCart());
   }, []);
+  console.log(items)
 
   const showItems = (items) => {
     return (
       <div>
         <h2>Your Cart has {`${items.length}`} items</h2>
         <hr />
-        {items.map((item, index) => (
-          <Card product={item} key={index} />
+        {items.map((product, index) => (
+          <Card
+            product={product}
+            key={index}
+            showAddToCartBtn={false}
+            cartUpdate={true}
+          />
         ))}
       </div>
     );

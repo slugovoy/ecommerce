@@ -2,10 +2,16 @@ import React, { useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import ShowImage from "./ShowImage";
 import moment from "moment";
-import { addItem } from "./cartHelpers";
+import { addItem, updateItem } from "./cartHelpers";
 
-const Card = ({ product, showViewProductButton = true }) => {
+const Card = ({
+  product,
+  showViewProductButton = true,
+  showAddToCartBtn = true,
+  cartUpdate = false,
+}) => {
   const [redirect, setRedirect] = useState(false);
+  const [count, setCount] = useState(product.count);
 
   const showViewButton = (showViewProductButton) => {
     return (
@@ -18,9 +24,8 @@ const Card = ({ product, showViewProductButton = true }) => {
   };
 
   const addToCart = () => {
-    addItem(product, () => {
-      setRedirect(true);
-    });
+    addItem(product,
+      setRedirect(true));
   };
 
   const shouldRedirect = (redirect) => {
@@ -29,11 +34,16 @@ const Card = ({ product, showViewProductButton = true }) => {
     }
   };
 
-  const showAddToCartButton = () => {
+  const showAddToCartButton = (showAddToCartBtn) => {
     return (
-      <button onClick={addToCart} className="btn btn-outline-success mt-2 mb-2">
-        Add to Cart
-      </button>
+      showAddToCartBtn && (
+        <button
+          onClick={addToCart}
+          className="btn btn-outline-success mt-2 mb-2"
+        >
+          Add to Cart
+        </button>
+      )
     );
   };
   const showStock = (quantity) => {
@@ -43,11 +53,37 @@ const Card = ({ product, showViewProductButton = true }) => {
       <span className="badge badge-danger badge-pill">Out of Stock</span>
     );
   };
+
+  const handleChange = (productId) => (event) => {
+    setCount(event.target.value < 1 ? 1 : event.target.value);
+    if (event.target.value >= 1) {
+      updateItem(productId, event.target.value);
+    }
+  };
+
+  const showCartUpdateOptions = (cartUpdate) => {
+    return (
+      cartUpdate && (
+        <div className="input-group mb-3">
+          <div className="input-group-prepend">
+            <span className="input-group-text">Adjust Quantity</span>
+          </div>
+          <input
+            className="form-control"
+            type="number"
+            value={count}
+            onChange={handleChange(product._id)}
+          />
+        </div>
+      )
+    );
+  };
+
   return (
     <div className="card">
       <div className="card-header name">{product.name}</div>
       <div className="card-body">
-      {shouldRedirect(redirect)}
+        {shouldRedirect(redirect)}
         <ShowImage item={product} url="product" />
         <p className="lead mt-2">{product.description.substring(0, 100)}</p>
         <p className="black-10">${product.price}</p>
@@ -62,7 +98,8 @@ const Card = ({ product, showViewProductButton = true }) => {
         <Link to={`/product/${product._id}`}>
           {showViewButton(showViewProductButton)}
         </Link>
-        {showAddToCartButton()}
+        {showAddToCartButton(showAddToCartBtn)}
+        {showCartUpdateOptions(cartUpdate)}
       </div>
     </div>
   );
