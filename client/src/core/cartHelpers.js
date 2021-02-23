@@ -1,4 +1,4 @@
-export const addItem = (item, next = f => f) => {
+export const addItem = (item, next = (f) => f) => {
   let cart = [];
   if (typeof window !== "undefined") {
     if (localStorage.getItem("cart")) {
@@ -48,13 +48,28 @@ export const updateItem = (productId, count) => {
     if (localStorage.getItem("cart")) {
       cart = JSON.parse(localStorage.getItem("cart"));
     }
-    
+
     cart.map((product, index) => {
-      if(product._id === productId) {
+      if (product._id === productId) {
         cart[index].count = count;
       }
-    })
-    localStorage.setItem("cart", JSON.stringify(cart))
-}
+    });
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+};
+export const removeItem = (productId) => {
+  let cart = [];
+  if (typeof window !== "undefined") {
+    if (localStorage.getItem("cart")) {
+      cart = JSON.parse(localStorage.getItem("cart"));
+    }
 
-}
+    cart.map((product, index) => {
+      if (product._id === productId) {
+        cart.splice(index, 1);
+      }
+    });
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+  return cart;
+};
