@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const expressValidator = require("express-validator");
+const braintreeRoutes = require("./routes/braintree");
 
 // import routes
 
@@ -41,6 +42,7 @@ app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", productRoutes);
+app.use("/api", braintreeRoutes);
 
 const port = process.env.PORT || 8000;
 
