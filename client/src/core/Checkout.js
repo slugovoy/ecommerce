@@ -5,11 +5,12 @@ import {
   getBraintreeClientToken,
   processPayment,
 } from "./apiCore";
+import { emptyCart } from "./cartHelpers";
 import Card from "./Card";
 import { isAuthenticated } from "../auth";
 import DropIn from "braintree-web-drop-in-react";
 
-const Checkout = ({ products }) => {
+const Checkout = ({ products, setRun = f => f, run = undefined }) => {
   const [data, setData] = useState({
     success: false,
     clientToken: null,
@@ -53,9 +54,6 @@ const Checkout = ({ products }) => {
     );
   };
 
-  // console.log(data.clientToken);
-  // console.log(products.length);
-
   const buy = () => {
     // send the nonce to your servers
     // nonce = data.instance.requestPaymentMethod()
@@ -63,12 +61,10 @@ const Checkout = ({ products }) => {
     let getNonce = data.instance
       .requestPaymentMethod()
       .then((data) => {
-        // console.log(data);
         nonce = data.nonce;
         // once you have nonce(card type, card number) send nonce as "PaymentMethodNonce"
         // and total to be charged
 
-        // console.log("nonce and total: ", nonce, getTotal(products));
         const paymentData = {
           paymentMethodNonce: nonce,
           amount: getTotal(products),
@@ -77,6 +73,10 @@ const Checkout = ({ products }) => {
           .then((response) => {
             // console.log(response)
             setData({ ...data, success: response.success });
+            emptyCart(() => {
+              setRun(!run)
+              console.log("Payment success and empty cart");
+            });
             // empty cart
             // create order
           })
