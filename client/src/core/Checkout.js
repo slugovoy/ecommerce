@@ -16,21 +16,19 @@ const Checkout = ({ products }) => {
 
   const userId = isAuthenticated() && isAuthenticated().user._id;
   const token = isAuthenticated() && isAuthenticated().token;
-  console.log(token);
-  console.log(userId);
+  // console.log(token);
+  // console.log(userId);
 
-  const getToken = async(userId, token) => {
+  const getToken = async (userId, token) => {
     try {
-
       const response = await getBraintreeClientToken(userId, token);
       console.log(response);
       setData({ ...data, clientToken: response.clientToken });
-    } catch(error) {
+    } catch (error) {
       setData({ ...data, error: error });
-
     }
   };
- console.log(data);
+  console.log(data);
   useEffect(() => {
     getToken(userId, token);
   }, []);
@@ -51,33 +49,60 @@ const Checkout = ({ products }) => {
     );
   };
 
-  console.log(data.clientToken);
+  // console.log(data.clientToken);
   // console.log(products.length);
+
+  const buy = () => {
+    // send the nonce to your servers
+    // nonce = data.instance.requestPaymentMethod()
+    let nonce;
+    let getNonce = data.instance.requestPaymentMethod().then((data) => {
+      console.log(data);
+      nonce = data.nonce;
+      // once you have nonce(card type, card number) send nonce as "PaymentMethodNonce"
+      // and total to be charged
+
+      console.log("nonce and total: ", nonce, getTotal(products))
+
+    })
+    .catch(error => {
+      console.log("dropin error", error);
+      setData({...data, error: error.message});
+    })
+  };
 
   const showDropIn = () => {
     return (
-
-    <div onBlur={() => setData({...data, error: ""})}>
-      {data.clientToken !== null && products.length > 0 ? (
-        <div>
-          <DropIn
-            options={{
-              authorization: data.clientToken
-            }}
-            onInstance={(instance) => (data.instance = instance)}
-          />
-          <button className="btn btn-success">Pay</button>
-        </div>
-      ) : (
-        <h2>Loading...</h2>
-      )}
-    </div>
-    )
+      <div onBlur={() => setData({ ...data, error: "" })}>
+        {data.clientToken !== null && products.length > 0 ? (
+          <div>
+            <DropIn
+              options={{
+                authorization: data.clientToken,
+              }}
+              onInstance={(instance) => (data.instance = instance)}
+            />
+            <button onClick={buy} className="btn btn-success">
+              Pay
+            </button>
+          </div>
+        ) : (
+          <h2>Loading...</h2>
+        )}
+      </div>
+    );
   };
+
+  const showError = (error) => (
+    <div className="alert alert-danger" style={{display: error ? "" : "none"}}>
+      {error}
+    </div>
+  )
 
   return (
     <div>
       <h2>Total: ${getTotal()}</h2>
+      {showError(data.error)}
       {showCheckout()}
     </div>
   );
