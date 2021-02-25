@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Layout from "./Layout";
 import { Link } from "react-router-dom";
 import { getProducts, getBraintreeClientToken } from "./apiCore";
 import Card from "./Card";
@@ -20,20 +19,20 @@ const Checkout = ({ products }) => {
   console.log(token);
   console.log(userId);
 
-  const getToken = (userId, token) => {
-    getBraintreeClientToken(userId, token).then((response) => {
-      if (response.error) {
-        setData({ ...data, error: response.error });
-      } else {
-        console.log(data);
-        setData({ clientToken: response.clientToken });
-      }
-    });
-  };
+  const getToken = async(userId, token) => {
+    try {
 
+      const response = await getBraintreeClientToken(userId, token);
+      console.log(response);
+      setData({ ...data, clientToken: response.clientToken });
+    } catch(error) {
+      setData({ ...data, error: error });
+
+    }
+  };
+ console.log(data);
   useEffect(() => {
     getToken(userId, token);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getTotal = () => {
@@ -53,24 +52,27 @@ const Checkout = ({ products }) => {
   };
 
   console.log(data.clientToken);
-  console.log(products.length);
+  // console.log(products.length);
 
   const showDropIn = () => {
-    <div>
+    return (
+
+    <div onBlur={() => setData({...data, error: ""})}>
       {data.clientToken !== null && products.length > 0 ? (
         <div>
           <DropIn
             options={{
-              authorization: data.clientToken,
+              authorization: data.clientToken
             }}
             onInstance={(instance) => (data.instance = instance)}
           />
-          <button className="btn btn-success">Checkout</button>
+          <button className="btn btn-success">Pay</button>
         </div>
       ) : (
-        <h2>Loading</h2>
+        <h2>Loading...</h2>
       )}
-    </div>;
+    </div>
+    )
   };
 
   return (
