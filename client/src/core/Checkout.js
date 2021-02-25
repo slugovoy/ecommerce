@@ -12,6 +12,7 @@ import DropIn from "braintree-web-drop-in-react";
 
 const Checkout = ({ products, setRun = f => f, run = undefined }) => {
   const [data, setData] = useState({
+    loading: false,
     success: false,
     clientToken: null,
     error: "",
@@ -55,6 +56,7 @@ const Checkout = ({ products, setRun = f => f, run = undefined }) => {
   };
 
   const buy = () => {
+    setData({...data, loading: true});
     // send the nonce to your servers
     // nonce = data.instance.requestPaymentMethod()
     let nonce;
@@ -76,11 +78,15 @@ const Checkout = ({ products, setRun = f => f, run = undefined }) => {
             emptyCart(() => {
               setRun(!run)
               console.log("Payment success and empty cart");
+              setData({...data, loading: false});
             });
             // empty cart
             // create order
           })
-          .catch((err) => console.log(err));
+          .catch((err) => {
+            console.log(err)
+            setData({...data, loading: false});
+          });
       })
       .catch((error) => {
         // console.log("dropin error", error);
@@ -96,6 +102,9 @@ const Checkout = ({ products, setRun = f => f, run = undefined }) => {
             <DropIn
               options={{
                 authorization: data.clientToken,
+                paypal: {
+                  flow: "vault"
+                }
               }}
               onInstance={(instance) => (data.instance = instance)}
             />
@@ -104,7 +113,7 @@ const Checkout = ({ products, setRun = f => f, run = undefined }) => {
             </button>
           </div>
         ) : (
-          <h2>Loading...</h2>
+          <h2>Payments options are loading...</h2>
         )}
       </div>
     );
@@ -127,9 +136,14 @@ const Checkout = ({ products, setRun = f => f, run = undefined }) => {
     </div>
   );
 
+  const showLoading = (loading) => (
+    loading && <h2>Loading...</h2>
+  )
+
   return (
     <div>
       <h2>Total: ${getTotal()}</h2>
+      {showLoading(data.loading)}
       {showSuccess(data.success)}
       {showError(data.error)}
       {showCheckout()}
