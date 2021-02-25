@@ -6,7 +6,7 @@ const gateway = new braintree.BraintreeGateway({
   environment: braintree.Environment.Sandbox,
   merchantId: process.env.BRAINTREE_MERCHANT_ID,
   publicKey: process.env.BRAINTREE_PUBLIC_KEY,
-  privateKey: process.env.BRAINTREE_PRIVATE_KEY
+  privateKey: process.env.BRAINTREE_PRIVATE_KEY,
 });
 
 exports.generateToken = (req, res) => {
@@ -17,4 +17,28 @@ exports.generateToken = (req, res) => {
       res.send(response);
     }
   });
+};
+
+exports.processPayment = (req, res) => {
+  let nonceFromClient = req.body.paymentMethodNonce;
+  let amountFromClient = req.body.amount;
+
+  // charge the user with
+
+  let newTransaction = gateway.transaction.sale(
+    {
+      amount: amountFromClient,
+      paymentMethodNonce: nonceFromClient,
+      options: {
+        submitForSettlement: true,
+      },
+    },
+    (err, result) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        res.json(result);
+      }
+    }
+  );
 };
