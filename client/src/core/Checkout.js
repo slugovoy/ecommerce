@@ -96,7 +96,7 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
             emptyCart(() => {
               setRun(!run);
               console.log("Payment success and empty cart");
-              setData({ ...data, loading: false });
+              setData({ ...data, loading: false, success: true });
             });
           })
           .catch((err) => {
@@ -137,9 +137,7 @@ const Checkout = ({ products, setRun = (f) => f, run = undefined }) => {
               Pay
             </button>
           </div>
-        ) : (
-          <h2>Payments options are loading...</h2>
-        )}
+        ) : ""}
       </div>
     );
   };
