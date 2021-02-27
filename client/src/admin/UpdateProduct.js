@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { getProduct, getCategories, updateProduct } from "./apiAdmin";
 
-
-const UpdateProduct = ({match}) => {
+const UpdateProduct = ({ match }) => {
   const [values, setValues] = useState({
     name: "",
     description: "",
@@ -37,25 +36,43 @@ const UpdateProduct = ({match}) => {
     formData,
   } = values;
 
-  const init = () => {
+  const init = (productId) => {
+    getProduct(productId).then((data) => {
+      if (data.error) {
+        setValues({ ...values, error: data.error });
+      } else {
+        setValues({
+          ...values,
+          name: data.name,
+          description: data.description,
+          price: data.price,
+          category: data.category._id,
+          shipping: data.shipping,
+          quantity: data.quantity,
+          formData: new FormData(),
+          redirectToProfile: false
+        });
+        initCategories();
+      }
+    });
+  };
+  const initCategories = () => {
     getCategories().then((data) => {
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
-        setValues({ ...values, categories: data, formData: new FormData() });
+        setValues({ categories: data, formData: new FormData() });
       }
     });
   };
 
-
   useEffect(() => {
-    init();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    init(match.params.productId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (name) => (event) => {
-    const value =
-      name === "photo" ? event.target.files[0] : event.target.value;
+    const value = name === "photo" ? event.target.files[0] : event.target.value;
     formData.set(name, value);
     setValues({ ...values, [name]: value });
   };
@@ -64,7 +81,8 @@ const UpdateProduct = ({match}) => {
     event.preventDefault();
     setValues({ ...values, error: "", loading: true });
 
-    updateProduct(user._id, token, formData).then((data) => {
+    updateProduct(match.params.productId, user._id, token, formData).then((data) => {
+      console.log(data)
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
@@ -76,7 +94,9 @@ const UpdateProduct = ({match}) => {
           price: "",
           quantity: "",
           loading: false,
-          createdProduct: data.name
+          error: false,
+          redirectToProfile: true,
+          createdProduct: data.name,
         });
       }
     });
@@ -151,7 +171,7 @@ const UpdateProduct = ({match}) => {
           <option value="1">Yes</option>
         </select>
       </div>
-      <button className="btn btn-outline-primary">Create Product</button>
+      <button className="btn btn-outline-primary">Update Product</button>
     </form>
   );
 
@@ -168,7 +188,7 @@ const UpdateProduct = ({match}) => {
       className="alert alert-info"
       style={{ display: createdProduct ? "" : "none" }}
     >
-      <h3>{`New product ${createdProduct} was created!`}</h3>
+      <h3>{`Product ${createdProduct} was ypdated!`}</h3>
     </div>
   );
   const showLoading = () =>
@@ -177,6 +197,15 @@ const UpdateProduct = ({match}) => {
         <h3>Loading...</h3>
       </div>
     );
+
+
+    const redirectUser = () => {
+      if(redirectToProfile) {
+        if(!error) {
+          return <Redirect to="/admin/products" />
+        }
+      }
+    }
 
   return (
     <Layout
@@ -189,6 +218,7 @@ const UpdateProduct = ({match}) => {
           {error ? showError() : ""}
           {createdProduct ? showSuccess() : ""}
           {newPostForm()}
+          {redirectUser()}
         </div>
       </div>
     </Layout>
