@@ -70,15 +70,15 @@ const Dashboard = () => {
           <li className="list-group-item">
             {history.map((h, index) => {
               return (
-                <div>
-                  <hr />
+                <div key={index} style={{borderBottom: '1px solid lightgrey', marginBottom: '8px'}}>
+                  
                   {h.products.map((product, index) => {
                     return (
                       <div key={index}>
                         <h6>Product name: {product.name}</h6>
                         <h6>Product price: ${product.price}</h6>
                         <h6>
-                          Purchased date: {moment(product.createdAt).fromNow()}
+                          Purchased date: {moment(h.createdAt).fromNow()}
                         </h6>
                       </div>
                     );
