@@ -64,6 +64,7 @@ const ManageProduct = () => {
                     <span
                       onClick={() => removeProduct(product._id)}
                       className="badge badge-danger badge-pill"
+                      style={{cursor: 'pointer'}}
                     >
                       Delete
                     </span>
