@@ -2,7 +2,7 @@
 
 ECOMMERCE is web book store application. Users can buy books,save them to the cart or purchase later.
 
-Checkout the [Deployed app here]().
+Checkout the [Deployed app here](https://ecommerce-book-store.netlify.app/).
 
 ## Table of Contents
 * [Installation](#installation)
@@ -15,14 +15,14 @@ Checkout the [Deployed app here]().
 
 ## Installation
 
-You don't need to install it, just simply go to this [Link]() or, if your prefer, copy this link  and paste in your browser.
+You don't need to install it, just simply go to this [Link](https://ecommerce-book-store.netlify.app/) or, if your prefer, copy this link https://ecommerce-book-store.netlify.app/ and paste in your browser.
 
 
 ## Usage
 
 * Gif:
 
-![Demo]()
+![Demo](./assets/DemoEcom.gif)
 
 
 * Description:
